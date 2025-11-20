@@ -37,23 +37,55 @@ jobs:
           docker push $ECR_URI:$IMAGE_TAG
           docker push $ECR_URI:latest
 
-      - name: Update ECS Task Definition
+      - name: Update ECS task definition
+        id: update-task-def
         run: |
-          NEW_TASK_DEF=$(jq --arg IMAGE "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" \
-            '.containerDefinitions[0].image = $IMAGE' $ECS_TASK_DEFINITION)
+          echo "Describing current task definition"
+          TASK_DEF_JSON=$(aws ecs describe-task-definition \
+            --task-definition $ECS_TASK_DEFINITION \
+            --region $AWS_REGION)
+
+          echo "Preparing new task definition..."
+          NEW_TASK_DEF=$(echo "$TASK_DEF_JSON" | jq --arg IMAGE "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" '
+            .taskDefinition |
+            {
+              family: .family,
+              taskRoleArn: .taskRoleArn,
+              executionRoleArn: .executionRoleArn,
+              networkMode: .networkMode,
+              containerDefinitions: (.containerDefinitions | map(.image = $IMAGE)),
+              volumes: .volumes,
+              placementConstraints: .placementConstraints,
+              requiresCompatibilities: .requiresCompatibilities,
+              cpu: .cpu,
+              memory: .memory,
+              tags: .tags,
+              runtimePlatform: {
+                cpuArchitecture: "X86_64",
+                operatingSystemFamily: "LINUX"
+              }
+            }
+            | with_entries(select(.value != null and .value != []))
+          ')
 
           echo "$NEW_TASK_DEF" > new-task-def.json
+          cat new-task-def.json | jq
 
-          aws ecs register-task-definition --cli-input-json file://new-task-def.json \
+          echo "Registering new task definition..."
+          aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json \
             --region $AWS_REGION > taskdef.json
 
           TASK_DEF_ARN=$(jq -r '.taskDefinition.taskDefinitionArn' taskdef.json)
           echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+          echo "✅ New task definition registered"
 
-      - name: Deploy ECS Service
+      - name: Deploy to ECS
         run: |
+          echo "Deploying to ECS cluster: $ECS_CLUSTER, service: $ECS_SERVICE"
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
             --task-definition $TASK_DEF_ARN \
-            --force-new-deployment
+            --force-new-deployment \
+            --region $AWS_REGION
