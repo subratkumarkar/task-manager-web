@@ -1,21 +1,15 @@
+
 FROM node:18-alpine AS builder
 WORKDIR /app
-
+COPY client/package.json client/package-lock.json ./client/
+RUN cd client && npm ci
 COPY client ./client
-COPY server ./server
-COPY package.json package-lock.json ./
-
-WORKDIR /app/client
-RUN npm install
-RUN npm run build
-
+RUN cd client && npm run build
 FROM node:18-alpine
 WORKDIR /app
-
 COPY server ./server
-COPY --from=builder /app/client/dist ./client/dist
-COPY package.json package-lock.json ./
-RUN npm install --production
-
+COPY server/package.json server/package-lock.json ./server/
+RUN cd server && npm ci --production
+COPY --from=builder /app/client/dist ./server/client/dist
 EXPOSE 3001
 CMD ["node", "server/index.js"]
