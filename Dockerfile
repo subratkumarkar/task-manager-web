@@ -9,8 +9,9 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
 COPY --from=builder /app/client/dist ./client/dist
-COPY server/ ./server
-COPY package.json package-lock.json* ./
+COPY server ./server
+WORKDIR /app/server
+COPY server/package.json server/package-lock.json* ./
 RUN npm ci --production || npm ci --omit=dev
 EXPOSE 3001
-CMD ["node", "server/index.js"]
+CMD ["node", "index.js"]
