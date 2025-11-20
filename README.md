@@ -1,5 +1,5 @@
 # task-manager-web
-Task Manager Dashboad
+Task Manager Dashboad:
 
 User can create personal tasks in the dashboard
 after creating an account and logging in.
@@ -41,7 +41,7 @@ The Express server forwards these to the Spring Boot backend (running on AWS at 
 This architecture provides: CORS-free communication, A unified production server for deployment,
 Clean separation of client UI and backend service.
 
-Authentication
+Authentication:
 
 The client stores the JWT returned by the backend in localStorage.
 Axios interceptors inject the token into all outgoing requests:
