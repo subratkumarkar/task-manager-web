@@ -1,33 +1,22 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+// vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
     plugins: [react()],
-
-    // Root of the React application
-    root: path.resolve(__dirname, 'src/client'),
-
-    // correct asset paths in production
-    base: '/',
-
+    root: path.resolve(__dirname, "client/src"),
     build: {
-        outDir: path.resolve(__dirname, 'dist/client'),
+        outDir: path.resolve(__dirname, "client/dist"),
         emptyOutDir: true,
-
-        // Ensures absolute paths work correctly
-        assetsDir: 'assets',
-        copyPublicDir: true,
     },
-
     server: {
         port: 3000,
         proxy: {
-            '/api': {
-                target: 'http://localhost:3001',   // Express server
+            "/api": {
+                target: "http://localhost:3001",
                 changeOrigin: true,
-                secure: false,
-            },
-        },
-    },
-})
+            }
+        }
+    }
+});
