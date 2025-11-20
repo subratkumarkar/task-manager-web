@@ -91,8 +91,13 @@ app.get("*", (req, res) => {
     res.sendFile(path.join(reactBuildPath, "index.html"));
 });
 
+//health
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "UP" });
+});
+
 // Start Server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log('Production server running at ${PORT}');
+    console.log(`Production server running at http://localhost:${PORT}`);
 });
