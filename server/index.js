@@ -14,13 +14,18 @@ const __dirname = path.dirname(__filename);
 const reactBuildPath = path.join(__dirname, "../client/dist");
 app.use(express.static(reactBuildPath));
 
+//health
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "UP" });
+});
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(reactBuildPath, "index.html"));
 });
 
 
 // Backend Proxy (Spring Boot)
-const SPRING_BOOT_URL = "http://localhost:8080/api/v1";
+const SPRING_BOOT_URL = "http://coursera-alb-1571933611.us-east-2.elb.amazonaws.com/api/v1";
 
 //forward auth header if exists
 const forwardHeaders = (req) => {
@@ -89,11 +94,6 @@ app.put("/api/*", async (req, res) => {
 // ------------------------------------
 app.get("*", (req, res) => {
     res.sendFile(path.join(reactBuildPath, "index.html"));
-});
-
-//health
-app.get("/health", (req, res) => {
-    res.status(200).json({ status: "UP" });
 });
 
 // Start Server
