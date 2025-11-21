@@ -82,14 +82,6 @@ button:disabled {
     justify-content: center;
 }
 
-.welcome-image {
-    width: 80%;
-    max-width: 550px;
-    height: auto;
-    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.1));
-    border-radius: 16px;
-}
-
 /* Right side */
 .welcome-right {
     flex: 1;
@@ -146,26 +138,27 @@ button:disabled {
     color: white;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .welcome-wrapper {
-        flex-direction: column;
-        text-align: center;
-        padding-top: 80px;
-    }
+/* Prevent horizontal scrolling globally */
+body, html {
+    overflow-x: hidden;
+}
 
-    .welcome-left {
-        order: 1;
-    }
+/* Ensure the welcome container fits screen */
+.welcome-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+    gap: 40px;
+}
 
-    .welcome-right {
-        order: 2;
-    }
-
-    .welcome-image {
-        width: 65%;
-        max-width: 350px;
-    }
+/* Make image responsive */
+.welcome-image {
+    max-width: 40%;
+    height: auto;
+    object-fit: contain;
 }
 
 
@@ -422,16 +415,15 @@ textarea:focus {
 /* HEADER BAR */
 
 .app-header {
-    width: 100%;
-    padding: 14px 24px;
-    background: var(--card-bg);
-    box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    padding: 0 20px;
+    height: 60px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .app-header-left {
@@ -445,7 +437,7 @@ textarea:focus {
 
 .app-header-right {
     display: flex;
-    gap: 18px;
+    gap: 10px;
 }
 
 .header-link {
