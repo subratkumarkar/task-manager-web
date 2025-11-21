@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 });
 
 // Proxy API
-const BACKEND = process.env.API_URL || "http://coursera-alb-1571933611.us-east-2.elb.amazonaws.com/api/v1";
+const BACKEND = process.env.API_URL || "http://task-manger-service-alb-666574350.us-east-2.elb.amazonaws.com/api/v1";
 
 app.use("/api", async (req, res) => {
     const url = BACKEND + req.url;
