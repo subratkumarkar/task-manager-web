@@ -4,6 +4,7 @@ import "../styles.css";
 import { TaskStatus, TaskPriority } from "../types/TaskEnums";
 import { TaskSearchRequest } from "../types/TaskSearchRequest";
 import { Task } from "../types/Task";
+import ShowMoreText from "../components/ShowMoreText";
 
 
 export default function TaskDashboard() {
@@ -30,10 +31,11 @@ export default function TaskDashboard() {
     const [filterTitle, setFilterTitle] = useState("");
     const [filterDesc, setFilterDesc] = useState("");
     const [filterStatus, setFilterStatus] = useState<TaskStatus | null>(null);
-    const [filterPriority, setFilterPriority] =
-        useState<TaskPriority | null>(null);
+    const [filterPriority, setFilterPriority] = useState<TaskPriority | null>(null);
     const [fromUpdatedAt, setFromUpdatedAt] = useState("");
     const [toUpdatedAt, setToUpdatedAt] = useState("");
+    const [filterFromDueDate, setFilterFromDueDate] = useState("");
+    const [filterToDueDate, setFilterToDueDate] = useState("");
 
     // ----- Edit task -----
     const [editTask, setEditTask] = useState<Task | null>(null);
@@ -54,8 +56,8 @@ export default function TaskDashboard() {
             description: filterDesc || undefined,
             status: filterStatus || null,
             priority: filterPriority || null,
-            fromUpdatedAt: fromUpdatedAt || null,
-            toUpdatedAt: toUpdatedAt || null,
+            fromDueDate: filterFromDueDate || null,
+            toDueDate: filterToDueDate || null,
             limit,
             startIndex,
             sortBy,
@@ -83,6 +85,21 @@ export default function TaskDashboard() {
             setSortBy(column);
             setSortDirection("ASC");
         }
+    }
+
+    function formatDate(dateString: string | null) {
+        if (!dateString) return "";
+
+        const date = new Date(dateString);
+
+        return date.toLocaleString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
     }
 
     async function createTask() {
@@ -189,19 +206,13 @@ export default function TaskDashboard() {
         return <span className={cls}>{priority}</span>;
     }
 
-    function shortDescription(desc: string) {
-        if (!desc) return "";
-        if (desc.length <= 60) return desc;
-        return desc.slice(0, 60) + "…";
-    }
-
     return (
         <div className="page-container full-width-page">
             <h1>Tasks</h1>
 
             {/* --------------- Create Task Card --------------- */}
+            <h3 style={{ marginTop: "28px", marginBottom: "12px" }}>Create Task</h3>
             <div className="create-task-container">
-                <h3>Create Task</h3>
                 {/* Row 1: title, priority, status, due date */}
                 <div className="create-task-row two-row-grid">
                     <div className="field">
@@ -249,10 +260,12 @@ export default function TaskDashboard() {
                     <div className="field flex-grow">
                         <label>Description</label>
                         <textarea
-                            rows={3}
                             value={newDesc}
+                            onChange={(e) => setNewDesc(e.target.value)}
                             placeholder="Describe the task..."
-                            onChange={(e) => setNewDesc(e.target.value)} />
+                            rows={2}
+                            style={{ resize: "vertical" }}
+                        />
                     </div>
 
                     <div className="field button-column">
@@ -262,64 +275,86 @@ export default function TaskDashboard() {
             </div>
 
             {/* ---------- View Tasks ---------- */}
-            <h3 style={{ marginTop: "28px", marginBottom: "12px" }}>View Tasks</h3>
-
+            <h3 style={{ marginTop: "28px", marginBottom: "12px" }}>Search Tasks</h3>
             {/* --------------- Filter --------------- */}
-            <div className="create-task-container">
-                <h3>Filters</h3>
-
-                <div className="create-task-row">
-                    <input
-                        placeholder="Title contains..."
-                        value={filterTitle}
-                        onChange={(e) => setFilterTitle(e.target.value)}/>
-
-                    <input
-                        placeholder="Description contains..."
-                        value={filterDesc}
-                        onChange={(e) => setFilterDesc(e.target.value)}/>
-
-                    <select
-                        value={filterPriority ?? ""}
-                        onChange={(e) =>
-                            setFilterPriority(
-                                e.target.value ? (e.target.value as TaskPriority) : null
-                            )
-                        }>
-                        <option value="">Priority (All)</option>
-                        <option value="LOW">Low</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="HIGH">High</option>
-                    </select>
-
-                    <select
-                        value={filterStatus ?? ""}
-                        onChange={(e) =>
-                            setFilterStatus(
-                                e.target.value ? (e.target.value as TaskStatus) : null
-                            )
-                        }>
-                        <option value="">Status (All)</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="DONE">Done</option>
-                    </select>
-
-                    <input
-                        type="datetime-local"
-                        value={fromUpdatedAt}
-                        onChange={(e) => setFromUpdatedAt(e.target.value)}/>
-                    <input
-                        type="datetime-local"
-                        value={toUpdatedAt}
-                        onChange={(e) => setToUpdatedAt(e.target.value)}/>
-                    <button onClick={() => loadTasks()}>Apply</button>
+            <div className="filters-container">
+                    <div className="filter-group">
+                        <label>Title</label>
+                        <input
+                            type="text"
+                            className="filter-input"
+                            placeholder="Title contains..."
+                            value={filterTitle}
+                            onChange={(e) => setFilterTitle(e.target.value)}/>
+                    </div>
+                    <div className="filter-group">
+                        <label>Description</label>
+                        <input
+                            type="text"
+                            className="filter-input"
+                            placeholder="Description contains..."
+                            value={filterDesc}
+                            onChange={(e) => setFilterDesc(e.target.value)}/>
+                    </div>
+                    <div className="filter-group">
+                        <label>Priority</label>
+                        <select
+                            className="filter-select"
+                            value={filterPriority}
+                            onChange={(e) =>
+                                setFilterPriority(
+                                    e.target.value ? (e.target.value as TaskPriority) : null
+                                )
+                            }>
+                            <option value="">All</option>
+                            <option value="LOW">Low</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="HIGH">High</option>
+                        </select>
+                    </div>
+                    <div className="filter-group">
+                        <label>Status</label>
+                        <select
+                            className="filter-select"
+                            value={filterStatus}
+                            onChange={(e) =>
+                                setFilterStatus(
+                                    e.target.value ? (e.target.value as TaskStatus) : null
+                                )
+                            }>
+                            <option value="">Status (All)</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="DONE">Done</option>
+                        </select>
+                    </div>
+                    <div className="filter-group">
+                        <label>Start Due Date</label>
+                        <input
+                            type="datetime-local"
+                            className="filter-input filter-date"
+                            value={filterFromDueDate}
+                            onChange={(e) => setFilterFromDueDate(e.target.value)}
+                        />
+                    </div>
+                    <div className="filter-group">
+                        <label>End Due Date</label>
+                        <input
+                            type="datetime-local"
+                            className="filter-input filter-date"
+                            value={filterToDueDate}
+                            onChange={(e) => setFilterToDueDate(e.target.value)}
+                        />
+                    </div>
+                    <div className="filter-group">
+                     <button onClick={() => loadTasks()}>Apply</button>
+                    </div>
                 </div>
-            </div>
-
             {/* ---------------Existing Tasks --------------- */}
+            {/* ---------- View Tasks ---------- */}
+            <h3 style={{ marginTop: "28px", marginBottom: "12px" }}>Your Tasks</h3>
             <div className="table-scroll-container">
-                <table>
+                <table className="task-table">
                     <thead>
                     <tr>
                         {[
@@ -346,12 +381,16 @@ export default function TaskDashboard() {
                             <tr
                                 key={task.id}
                                 className={isOverdue(task) ? "row-overdue" : ""}>
-                                <td>{task.title}</td>
+                                <td>
+                                    <ShowMoreText text={task.title} maxChars={40} />
+                                </td>
                                 <td>{renderPriorityTag(task.priority)}</td>
                                 <td>{task.status}</td>
-                                <td title={task.description}>{shortDescription(task.description)}</td>
-                                <td>{task.dueDate}</td>
-                                <td>{task.updatedAt}</td>
+                                <td>
+                                    <ShowMoreText text={task.description} maxChars={40} />
+                                </td>
+                                <td>{formatDate(task.dueDate)}</td>
+                                <td>{formatDate(task.updatedAt)}</td>
                                 <td>
                                     <div style={{ display: "flex", gap: "8px" }}>
                                         <button onClick={() => openEditModal(task)}>
@@ -370,19 +409,30 @@ export default function TaskDashboard() {
                 </table>
             </div>
 
-            {/* --------------- Pagination --------------- */}
-            <div className="pagination">
-                <button
-                    disabled={startIndex === 0}
-                    onClick={() => setStartIndex(Math.max(startIndex - limit, 0))}>
-                    Previous
-                </button>
 
-                <button
-                    disabled={!hasNext}
-                    onClick={() => setStartIndex(startIndex + limit)}>
-                    Next
-                </button>
+            {/* --------------- Pagination --------------- */}
+            <div className="pagination-links">
+                <span
+                    className={startIndex === 0 ? "disabled" : ""}
+                    onClick={() => {
+                        if (startIndex !== 0) {
+                            setStartIndex(Math.max(startIndex - limit, 0));
+                        }
+                    }}
+                >
+                    ← Previous
+                </span>
+
+                    <span
+                        className={!hasNext ? "disabled" : ""}
+                        onClick={() => {
+                            if (hasNext) {
+                                setStartIndex(startIndex + limit);
+                            }
+                        }}
+                    >
+                    Next →
+               </span>
             </div>
 
             {/* --------------- Edit Task Modal --------------- */}

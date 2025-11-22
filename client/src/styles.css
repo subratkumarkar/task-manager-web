@@ -216,10 +216,80 @@ tr:hover {
 
 /*PAGINATION*/
 
-.pagination {
-    margin-top: 20px;
+.pagination-links {
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.pagination-links span {
+    cursor: pointer;
+}
+
+.pagination-links span:hover {
+    text-decoration: underline;
+}
+
+/* Disabled links */
+.pagination-links span.disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+/*FILTER */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 25px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.filter-input,
+.filter-select {
+    border: 1px solid #d1d5db;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 220px;
+}
+
+.filter-date {
+    width: 260px;
+}
+
+.apply-button {
+    height: 42px;
+    padding: 0 25px;
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.apply-button:hover {
+    background-color: #1d4ed8;
 }
 
 /* CREATE TASK */
@@ -303,6 +373,33 @@ tr:hover {
 
 
 /* Layout helpers for TaskDashboard */
+.task-table td {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    max-width: 300px;
+    vertical-align: top;
+    padding: 8px 12px;
+}
+
+.show-more-container {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+}
+
+.show-more-toggle {
+    color: #2563eb; /* nice blue */
+    cursor: pointer;
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.show-more-toggle:hover {
+    text-decoration: underline;
+}
+
 .field {
     display: flex;
     flex-direction: column;

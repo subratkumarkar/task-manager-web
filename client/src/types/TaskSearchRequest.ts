@@ -6,8 +6,8 @@ export interface TaskSearchRequest {
     status?: TaskStatus | null;
     priority?: TaskPriority | null;
 
-    fromUpdatedAt?: string | null;
-    toUpdatedAt?: string | null;
+    fromDueDate?: string | null;
+    toDueDate?: string | null;
 
     limit: number;
     startIndex: number;
