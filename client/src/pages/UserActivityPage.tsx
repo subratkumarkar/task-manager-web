@@ -75,7 +75,6 @@ export default function UserActivityPage() {
                     <thead>
                     <tr>
                         <th>Time</th>
-                        <th>Task ID</th>
                         <th>Event</th>
                         <th>Title</th>
                         <th>Description</th>
@@ -91,7 +90,6 @@ export default function UserActivityPage() {
                                 <td>
                                     <ShowMoreText text={formatDate(act.activityTime)} maxChars={40} />
                                 </td>
-                                <td>{act.taskId}</td>
                                 <td>{act.eventType}</td>
                                 <td>
                                     <ShowMoreText text={act.title} maxChars={50} />
