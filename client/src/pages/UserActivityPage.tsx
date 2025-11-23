@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/http";
 import { useNavigate } from "react-router-dom";
 import { ActivityRecord } from "../types/ActivityRecord";
+import ShowMoreText from "../components/ShowMoreText";
 
 interface ActivitySearchResponse {
     items: ActivityRecord[];
@@ -43,6 +44,21 @@ export default function UserActivityPage() {
         loadActivities();
     }, [startIndex]);
 
+    function formatDate(dateString: string | null) {
+        if (!dateString) return "";
+
+        const date = new Date(dateString);
+
+        return date.toLocaleString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+    }
+
     return (
         <div className="page-container full-width-page">
             <h1>User Activity Log</h1>
@@ -72,18 +88,22 @@ export default function UserActivityPage() {
                     {!loading &&
                         activities.map((act, idx) => (
                             <tr key={idx}>
-                                <td>{act.activityTime}</td>
+                                <td>
+                                    <ShowMoreText text={formatDate(act.activityTime)} maxChars={40} />
+                                </td>
                                 <td>{act.taskId}</td>
                                 <td>{act.eventType}</td>
-                                <td>{act.title}</td>
-                                <td title={act.description}>
-                                    {act.description?.length > 60
-                                        ? act.description.slice(0, 60) + "…"
-                                        : act.description}
+                                <td>
+                                    <ShowMoreText text={act.title} maxChars={50} />
+                                </td>
+                                <td>
+                                    <ShowMoreText text={act.description} maxChars={50} />
                                 </td>
                                 <td>{act.priority}</td>
                                 <td>{act.status}</td>
-                                <td>{act.dueDate}</td>
+                                <td>
+                                    <ShowMoreText text={formatDate(act.dueDate)} maxChars={40} />
+                                </td>
                             </tr>
                         ))}
 
@@ -107,18 +127,30 @@ export default function UserActivityPage() {
             </div>
 
             {/* -------------------- Pagination -------------------- */}
-            <div className="pagination">
-                <button
-                    disabled={startIndex === 0}
-                    onClick={() => setStartIndex(Math.max(0, startIndex - limit))}>
-                    Previous
-                </button>
-                <button
-                    disabled={!hasNext}
-                    onClick={() => setStartIndex(startIndex + limit)}>
-                    Next
-                </button>
+            <div className="pagination-links">
+                <span
+                    className={startIndex === 0 ? "disabled" : ""}
+                    onClick={() => {
+                        if (startIndex !== 0) {
+                            setStartIndex(Math.max(startIndex - limit, 0));
+                        }
+                    }}
+                >
+                    ← Previous
+                </span>
+
+                <span
+                    className={!hasNext ? "disabled" : ""}
+                    onClick={() => {
+                        if (hasNext) {
+                            setStartIndex(startIndex + limit);
+                        }
+                    }}
+                  >
+                    Next →
+               </span>
             </div>
+
         </div>
     );
 }
