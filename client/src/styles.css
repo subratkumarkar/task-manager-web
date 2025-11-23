@@ -373,13 +373,24 @@ tr:hover {
 
 
 /* Layout helpers for TaskDashboard */
+.task-table td button {
+    white-space: nowrap !important;
+    padding: 6px 12px;
+}
+.task-table td .actions-wrapper {
+    display: flex;
+    gap: 8px;
+    white-space: nowrap;
+}
+.priority-tag,
+.status-tag {
+    white-space: nowrap !important;
+}
 .task-table td {
+    white-space: nowrap;
+}
+.task-table td.description-cell {
     white-space: normal;
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
-    max-width: 300px;
-    vertical-align: top;
-    padding: 8px 12px;
 }
 
 .show-more-container {
@@ -641,3 +652,6 @@ textarea:focus {
 .link:hover {
     text-decoration: underline;
 }
+/***************/
+
+

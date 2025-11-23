@@ -392,7 +392,7 @@ export default function TaskDashboard() {
                                 <td>{formatDate(task.dueDate)}</td>
                                 <td>{formatDate(task.updatedAt)}</td>
                                 <td>
-                                    <div style={{ display: "flex", gap: "8px" }}>
+                                    <div className="actions-wrapper">
                                         <button onClick={() => openEditModal(task)}>
                                             Edit
                                         </button>
