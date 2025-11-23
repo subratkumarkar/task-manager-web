@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function AppHeader() {
     const navigate = useNavigate();
@@ -24,16 +25,13 @@ export default function AppHeader() {
             <div className="app-header-right">
                 {token && (
                     <>
-                        <button
-                            className="header-link"
-                            onClick={() => navigate(`/activities`)}
-                        >
+                        <Link to="/activities" className="header-link">
                             📊 User Activity
-                        </button>
-
-                        <button className="header-link logout-link" onClick={logout}>
+                        </Link>
+                        <Link to="/login" className="logout-link"
+                              onClick={logout}>
                             🔓 Logout
-                        </button>
+                        </Link>
                     </>
                 )}
             </div>

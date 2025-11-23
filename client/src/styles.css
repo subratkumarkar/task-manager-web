@@ -605,19 +605,33 @@ table td:nth-child(4) {
 }
 
 .header-link {
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    color: var(--primary);
+    all: unset;
     cursor: pointer;
+    color: var(--primary);
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .header-link:hover {
     text-decoration: underline;
+    opacity: 1;
 }
 
 .logout-link {
+    all: unset;
+    cursor: pointer;
     color: var(--danger);
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+    opacity: 1;
 }
 
 /* Back button */
@@ -629,6 +643,15 @@ table td:nth-child(4) {
     border-radius: var(--radius);
     padding: 8px 16px;
     cursor: pointer;
+}
+
+.back-link-btn {
+    font-size: 15px;
+    color: var(--primary);
+    text-decoration: none;
+}
+.back-link-btn:hover {
+    text-decoration: underline;
 }
 
 /* welcome page layout */
@@ -653,23 +676,6 @@ table td:nth-child(4) {
 .welcome-card button {
     width: 100%;
     margin-top: 12px;
-}
-
-/* Header icon hover effect */
-.header-link {
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    color: var(--primary);
-}
-
-.header-link:hover {
-    opacity: 0.7;
-}
-
-.logout-link {
-    color: var(--danger);
 }
 
 .app-logo {

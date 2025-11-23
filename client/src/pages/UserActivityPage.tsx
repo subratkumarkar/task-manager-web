@@ -3,6 +3,7 @@ import { api } from "../api/http";
 import { useNavigate } from "react-router-dom";
 import { ActivityRecord } from "../types/ActivityRecord";
 import ShowMoreText from "../components/ShowMoreText";
+import { Link } from "react-router-dom";
 
 interface ActivitySearchResponse {
     items: ActivityRecord[];
@@ -62,12 +63,9 @@ export default function UserActivityPage() {
     return (
         <div className="page-container full-width-page">
             <h1>User Activity Log</h1>
-            <button
-                className="back-btn"
-                onClick={() => navigate("/tasks")}
-                style={{ marginBottom: "15px" }}>
+            <Link to="/tasks" className="back-link-btn">
                 ← Back to Tasks
-            </button>
+            </Link>
 
             {/* -------------------- Activity Details -------------------- */}
             <div className="table-scroll-container" style={{ marginTop: "18px" }}>
