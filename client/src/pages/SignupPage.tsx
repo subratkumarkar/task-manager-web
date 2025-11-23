@@ -8,6 +8,15 @@ export default function SignupPage() {
     const [lastname, setLastname] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
+
+    function loginIfMissingToken() {
+        if (token) {
+            navigate("/tasks")
+        } else {
+            navigate("/login")
+        }
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -64,7 +73,7 @@ export default function SignupPage() {
                 </form>
 
                 <p className="text-center" style={{ marginTop: "15px" }}>
-                    Already have an account? <a href="/login">Login</a>
+                    Already have an account? <a className="link" onClick={loginIfMissingToken}>Login</a>
                 </p>
             </div>
         </div>
