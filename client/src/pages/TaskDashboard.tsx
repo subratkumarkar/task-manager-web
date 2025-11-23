@@ -219,13 +219,14 @@ export default function TaskDashboard() {
                         <label>Title</label>
                         <input
                             value={newTitle}
+                            className="create-input"
                             placeholder="Task title"
                             onChange={(e) => setNewTitle(e.target.value)} />
                     </div>
 
                     <div className="field small-field">
                         <label>Priority</label>
-                        <select
+                        <select className="create-select"
                             value={newPriority}
                             onChange={(e) =>
                                 setNewPriority(e.target.value as TaskPriority)}>
@@ -237,7 +238,7 @@ export default function TaskDashboard() {
 
                     <div className="field small-field">
                         <label>Status</label>
-                        <select
+                        <select className="create-select"
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value as TaskStatus)}>
                             <option value="PENDING">Pending</option>
@@ -347,7 +348,7 @@ export default function TaskDashboard() {
                         />
                     </div>
                     <div className="filter-group">
-                     <button onClick={() => loadTasks()}>Apply</button>
+                     <button className="apply-button-column" onClick={() => loadTasks()}>Apply</button>
                     </div>
                 </div>
             {/* ---------------Existing Tasks --------------- */}
