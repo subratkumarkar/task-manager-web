@@ -47,6 +47,7 @@ export default function TaskDashboard() {
     const [editDueDate, setEditDueDate] = useState("");
 
     const hasNext = startIndex + limit < totalCount;
+    const [createError, setCreateError] = useState("");
 
     async function loadTasks() {
         setLoading(true);
@@ -103,9 +104,21 @@ export default function TaskDashboard() {
     }
 
     async function createTask() {
+        setCreateError(""); // clear old errors
+
         if (!newTitle.trim()) {
-            alert("Title required");
+            setCreateError("Title is required.");
             return;
+        }
+
+        if (newDueDate) {
+            const selected = new Date(newDueDate);
+            const now = new Date();
+
+            if (selected < now) {
+                setCreateError("Due date/time cannot be in the past.");
+                return;
+            }
         }
 
         try {
@@ -116,17 +129,21 @@ export default function TaskDashboard() {
                 status: newStatus,
                 dueDate: newDueDate ? newDueDate + ":00" : null,
             });
+
+            // reset form
             setNewTitle("");
             setNewDesc("");
             setNewPriority("MEDIUM");
             setNewStatus("PENDING");
             setNewDueDate("");
+            setCreateError("");
 
             loadTasks();
         } catch (err) {
-            alert("Failed to create task");
+            setCreateError("Failed to create task.");
         }
     }
+
 
     // ---- Delete with confirm dialog ----
     async function handleDelete(task: Task) {
@@ -221,6 +238,7 @@ export default function TaskDashboard() {
                             value={newTitle}
                             className="create-input"
                             placeholder="Task title"
+                            maxLength={255}
                             onChange={(e) => setNewTitle(e.target.value)} />
                     </div>
 
@@ -251,24 +269,29 @@ export default function TaskDashboard() {
                         <label>Due Date</label>
                         <input
                             type="datetime-local"
+                            min={new Date().toISOString().slice(0, 16)}
                             value={newDueDate}
                             onChange={(e) => setNewDueDate(e.target.value)}/>
                     </div>
                 </div>
-
+                {createError && (
+                    <p style={{ color: "red", marginBottom: "6px", fontSize: "14px" }}>
+                        {createError}
+                    </p>
+                )}
                 {/* Row 2: description textarea + create button on the right */}
                 <div className="create-task-row second-row">
                     <div className="field flex-grow">
                         <label>Description</label>
                         <textarea
                             value={newDesc}
+                            maxLength={2000}
                             onChange={(e) => setNewDesc(e.target.value)}
                             placeholder="Describe the task..."
                             rows={2}
                             style={{ resize: "vertical" }}
                         />
                     </div>
-
                     <div className="field button-column">
                         <button onClick={createTask}>Create</button>
                     </div>
@@ -284,6 +307,7 @@ export default function TaskDashboard() {
                         <input
                             type="text"
                             className="filter-input"
+                            maxLength={255}
                             placeholder="Title contains..."
                             value={filterTitle}
                             onChange={(e) => setFilterTitle(e.target.value)}/>
@@ -293,6 +317,7 @@ export default function TaskDashboard() {
                         <input
                             type="text"
                             className="filter-input"
+                            maxLength={2000}
                             placeholder="Description contains..."
                             value={filterDesc}
                             onChange={(e) => setFilterDesc(e.target.value)}/>

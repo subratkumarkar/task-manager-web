@@ -6,6 +6,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const [error, setError] = useState("");
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -15,7 +16,7 @@ export default function LoginPage() {
             localStorage.setItem("userId", res.data.userId);
             navigate("/tasks");
         } catch (err) {
-            alert("Login failed");
+            setError("Invalid email or password");
         }
     }
 
@@ -30,6 +31,9 @@ export default function LoginPage() {
                     <label>Password</label>
                     <input type="password" value={password}
                            onChange={(e) => setPassword(e.target.value)} />
+                    {error && (
+                        <p className="error-text">{error}</p>
+                    )}
                     <button type="submit" style={{ width: "100%", marginTop: "10px" }}>
                         Login
                     </button>
