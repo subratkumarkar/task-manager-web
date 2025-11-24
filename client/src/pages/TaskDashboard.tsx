@@ -5,6 +5,7 @@ import { TaskStatus, TaskPriority } from "../types/TaskEnums";
 import { TaskSearchRequest } from "../types/TaskSearchRequest";
 import { Task } from "../types/Task";
 import ShowMoreText from "../components/ShowMoreText";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 
 export default function TaskDashboard() {
@@ -48,6 +49,27 @@ export default function TaskDashboard() {
 
     const hasNext = startIndex + limit < totalCount;
     const [createError, setCreateError] = useState("");
+
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+
+    function askDelete(task: Task) {
+        setTaskToDelete(task);
+        setConfirmOpen(true);
+    }
+
+    async function handleConfirmDelete() {
+        if (!taskToDelete) return;
+
+        try {
+            await api.delete(`/tasks/${taskToDelete.id}`);
+            setConfirmOpen(false);
+            setTaskToDelete(null);
+            loadTasks();
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
+    }
 
     async function loadTasks() {
         setLoading(true);
@@ -422,9 +444,7 @@ export default function TaskDashboard() {
                                         <button onClick={() => openEditModal(task)}>
                                             Edit
                                         </button>
-                                        <button
-                                            className="btn-danger"
-                                            onClick={() => handleDelete(task)}>
+                                        <button className="btn-danger" onClick={() => askDelete(task)}>
                                             Delete
                                         </button>
                                     </div>
@@ -460,7 +480,12 @@ export default function TaskDashboard() {
                     Next →
                </span>
             </div>
-
+            <ConfirmDialog
+                open={confirmOpen}
+                message={`Are you sure you want to delete "${taskToDelete?.title}"?`}
+                onCancel={() => setConfirmOpen(false)}
+                onConfirm={handleConfirmDelete}
+            />
             {/* --------------- Edit Task Modal --------------- */}
             {editTask && (
                 <div className="modal-backdrop">
