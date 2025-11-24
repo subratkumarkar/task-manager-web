@@ -38,7 +38,7 @@
     gap: 14px;
 }
 
-.confirm-btn-cancel {
+.btn-cancel {
     padding: 10px 22px;
     border-radius: 8px;
     background: #e2e8f0;
@@ -49,11 +49,11 @@
     transition: 0.2s;
 }
 
-.confirm-btn-cancel:hover {
+.btn-cancel:hover {
     background: #cbd5e1;
 }
 
-.confirm-btn-delete {
+.btn-delete {
     padding: 10px 22px;
     border-radius: 8px;
     background: #dc2626;
@@ -64,7 +64,7 @@
     transition: 0.2s;
 }
 
-.confirm-btn-delete:hover {
+.btn-delete:hover {
     background: #b91c1c;
 }
 

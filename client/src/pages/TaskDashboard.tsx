@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/http";
 import "../styles.css";
+import "../ConfirmDialog.css";
 import { TaskStatus, TaskPriority } from "../types/TaskEnums";
 import { TaskSearchRequest } from "../types/TaskSearchRequest";
 import { Task } from "../types/Task";
@@ -52,6 +53,7 @@ export default function TaskDashboard() {
 
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+    const [editError, setEditError] = useState("");
 
     function askDelete(task: Task) {
         setTaskToDelete(task);
@@ -132,17 +134,6 @@ export default function TaskDashboard() {
             setCreateError("Title is required.");
             return;
         }
-
-        if (newDueDate) {
-            const selected = new Date(newDueDate);
-            const now = new Date();
-
-            if (selected < now) {
-                setCreateError("Due date/time cannot be in the past.");
-                return;
-            }
-        }
-
         try {
             await api.post("/tasks", {
                 title: newTitle,
@@ -167,21 +158,6 @@ export default function TaskDashboard() {
     }
 
 
-    // ---- Delete with confirm dialog ----
-    async function handleDelete(task: Task) {
-        const ok = window.confirm(
-            `Are you sure you want to delete task "${task.title}"?`
-        );
-        if (!ok) return;
-
-        try {
-            await api.delete(`/tasks/${task.id}`);
-            await loadTasks();
-        } catch (err) {
-            alert("Failed to delete task");
-        }
-    }
-
     // ---- Edit modal helpers ----
     function openEditModal(task: Task) {
         setEditTask(task);
@@ -200,12 +176,30 @@ export default function TaskDashboard() {
 
     function closeEditModal() {
         setEditTask(null);
+        setEditError("");
     }
 
     async function saveEdit() {
-        if (!editTask) {
+        if (!editTask) return;
+
+        setEditError(""); // clear old errors
+
+        // --- VALIDATION ---
+        if (!editTitle.trim()) {
+            setEditError("Title is required.");
             return;
         }
+
+        if (editDueDate) {
+            const selected = new Date(editDueDate);
+            const now = new Date();
+            if (selected < now) {
+                setEditError("Due date/time cannot be in the past.");
+                return;
+            }
+        }
+        // -------------------
+
         try {
             await api.put("/tasks", {
                 id: editTask.id,
@@ -215,12 +209,15 @@ export default function TaskDashboard() {
                 status: editStatus,
                 dueDate: editDueDate ? editDueDate + ":00" : null,
             });
+
             closeEditModal();
             loadTasks();
         } catch (err) {
-            alert("Failed to update task");
+            setEditError("Failed to update task.");
         }
     }
+
+
 
     // ---- Helpers ----
     function isOverdue(task: Task): boolean {
@@ -291,7 +288,6 @@ export default function TaskDashboard() {
                         <label>Due Date</label>
                         <input
                             type="datetime-local"
-                            min={new Date().toISOString().slice(0, 16)}
                             value={newDueDate}
                             onChange={(e) => setNewDueDate(e.target.value)}/>
                     </div>
@@ -493,11 +489,13 @@ export default function TaskDashboard() {
                         <h3>Edit Task</h3>
 
                         <div className="modal-body">
+
                             <div className="field">
                                 <label>Title</label>
                                 <input
                                     value={editTitle}
-                                    onChange={(e) => setEditTitle(e.target.value)}/>
+                                    onChange={(e) => setEditTitle(e.target.value)}
+                                />
                             </div>
 
                             <div className="field">
@@ -505,49 +503,59 @@ export default function TaskDashboard() {
                                 <textarea
                                     rows={4}
                                     value={editDesc}
-                                    onChange={(e) => setEditDesc(e.target.value)}/>
+                                    onChange={(e) => setEditDesc(e.target.value)}
+                                />
                             </div>
 
-                            <div className="modal-row">
-                                <div className="field">
+                            {/* ⭐ PRIORITY + STATUS in one row (reuses Create Task layout) */}
+                            <div className="create-task-row two-row-grid">
+                                <div className="field small-field">
                                     <label>Priority</label>
                                     <select
+                                        className="create-select"
                                         value={editPriority}
                                         onChange={(e) =>
-                                            setEditPriority(e.target.value as TaskPriority)}>
+                                            setEditPriority(e.target.value as TaskPriority)
+                                        }
+                                    >
                                         <option value="LOW">Low</option>
                                         <option value="MEDIUM">Medium</option>
                                         <option value="HIGH">High</option>
                                     </select>
                                 </div>
 
-                                <div className="field">
+                                <div className="field small-field">
                                     <label>Status</label>
                                     <select
+                                        className="create-select"
                                         value={editStatus}
                                         onChange={(e) =>
-                                            setEditStatus(e.target.value as TaskStatus)}>
+                                            setEditStatus(e.target.value as TaskStatus)
+                                        }
+                                    >
                                         <option value="PENDING">Pending</option>
                                         <option value="IN_PROGRESS">In Progress</option>
                                         <option value="DONE">Done</option>
                                     </select>
                                 </div>
+                            </div>
 
-                                <div className="field">
-                                    <label>Due Date</label>
-                                    <input
-                                        type="datetime-local"
-                                        value={editDueDate}
-                                        onChange={(e) => setEditDueDate(e.target.value)}/>
-                                </div>
+                            {/* ⭐ Due date moved BELOW, consistent with Create Task */}
+                            <div className="field small-field">
+                                <label>Due Date</label>
+                                <input
+                                    type="datetime-local"
+                                    value={editDueDate}
+                                    onChange={(e) => setEditDueDate(e.target.value)}
+                                />
                             </div>
                         </div>
-
-                        <div className="modal-footer">
-                            <button onClick={closeEditModal}>Cancel</button>
-                            <button className="btn-primary" onClick={saveEdit}>
-                                Save
-                            </button>
+                        {editError && (
+                            <p className="error-text">{editError}</p>
+                        )}
+                        <div className="modal-footer" style={{ justifyContent: "center" }}>
+                            <button className="btn-cancel" onClick={closeEditModal}>Cancel</button>
+                            <button className="btn-primary" onClick={saveEdit}>Save</button>
                         </div>
                     </div>
                 </div>

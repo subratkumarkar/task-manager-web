@@ -8,6 +8,8 @@ export default function SignupPage() {
     const [lastname, setLastname] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const [signupError, setSignupError] = useState("");
+    const [signupSuccess, setSignupSuccess] = useState("");
     const token = localStorage.getItem("token");
 
     function loginIfMissingToken() {
@@ -27,10 +29,11 @@ export default function SignupPage() {
                 lastname,
                 password,
             });
-            alert("Account created successfully! Please log in.");
-            navigate("/login");
+            setSignupSuccess("Account created successfully! Please log in.");
+            setTimeout(() => navigate("/login"), 1200); // small delay so user can see message
         } catch (err) {
-            alert("Signup failed");
+            const backendMsg = err.response?.data?.error ||  "Signup failed. Please try again.";
+            setSignupError(backendMsg);
         }
     }
 
@@ -67,6 +70,17 @@ export default function SignupPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter password"/>
 
+                    {signupError && (
+                        <p className="error-text" style={{ textAlign: "center" }}>
+                            {signupError}
+                        </p>
+                    )}
+
+                    {signupSuccess && (
+                        <p className="success-text" style={{ color: "green", textAlign: "center" }}>
+                            {signupSuccess}
+                        </p>
+                    )}
                     <button type="submit" style={{ width: "100%", marginTop: "10px" }}>
                         Sign Up
                     </button>

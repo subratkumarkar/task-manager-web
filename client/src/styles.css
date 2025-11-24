@@ -720,3 +720,8 @@ table td:nth-child(4) {
     margin-bottom: 10px;
     text-align: center;
 }
+.success-text {
+    color: #16a34a;
+    font-size: 14px;
+    margin-top: 8px;
+}

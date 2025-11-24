@@ -9,11 +9,11 @@ export default function ConfirmDialog({ open, message, onCancel, onConfirm }) {
                 <p className="confirm-message">{message}</p>
 
                 <div className="confirm-actions">
-                    <button className="confirm-btn-cancel" onClick={onCancel}>
+                    <button className="btn-cancel" onClick={onCancel}>
                         Cancel
                     </button>
 
-                    <button className="confirm-btn-delete" onClick={onConfirm}>
+                    <button className="btn-delete" onClick={onConfirm}>
                         Delete
                     </button>
                 </div>
