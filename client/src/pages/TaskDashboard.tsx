@@ -35,10 +35,10 @@ export default function TaskDashboard() {
     const [filterDesc, setFilterDesc] = useState("");
     const [filterStatus, setFilterStatus] = useState<TaskStatus | null>(null);
     const [filterPriority, setFilterPriority] = useState<TaskPriority | null>(null);
-    const [fromUpdatedAt, setFromUpdatedAt] = useState("");
-    const [toUpdatedAt, setToUpdatedAt] = useState("");
     const [filterFromDueDate, setFilterFromDueDate] = useState("");
     const [filterToDueDate, setFilterToDueDate] = useState("");
+    const [filterReset, setFilterReset] = useState(0);
+
 
     // ----- Edit task -----
     const [editTask, setEditTask] = useState<Task | null>(null);
@@ -86,6 +86,17 @@ export default function TaskDashboard() {
         setTimeout(() => setToastMsg(""), 3000);
     }
 
+    function clearFilters() {
+        setFilterTitle("");
+        setFilterDesc("");
+        setFilterPriority(null);
+        setFilterStatus(null);
+        setFilterFromDueDate("");
+        setFilterToDueDate("");
+        setStartIndex(0);
+        setFilterReset(v => v + 1);
+    }
+
     async function loadTasks() {
         setLoading(true);
 
@@ -114,7 +125,7 @@ export default function TaskDashboard() {
 
     useEffect(() => {
         loadTasks();
-    }, [startIndex, sortBy, sortDirection]);
+    }, [startIndex, sortBy, sortDirection, filterReset]);
 
     function handleSort(column: string) {
         if (sortBy === column) {
@@ -347,7 +358,7 @@ export default function TaskDashboard() {
                         <label>Priority</label>
                         <select
                             className="filter-select"
-                            value={filterPriority}
+                            value={filterPriority ?? ""}
                             onChange={(e) =>
                                 setFilterPriority(
                                     e.target.value ? (e.target.value as TaskPriority) : null
@@ -363,13 +374,13 @@ export default function TaskDashboard() {
                         <label>Status</label>
                         <select
                             className="filter-select"
-                            value={filterStatus}
+                            value={filterStatus ?? ""}
                             onChange={(e) =>
                                 setFilterStatus(
                                     e.target.value ? (e.target.value as TaskStatus) : null
                                 )
                             }>
-                            <option value="">Status (All)</option>
+                            <option value="">All</option>
                             <option value="PENDING">Pending</option>
                             <option value="IN_PROGRESS">In Progress</option>
                             <option value="COMPLETE">Complete</option>
@@ -393,9 +404,19 @@ export default function TaskDashboard() {
                             onChange={(e) => setFilterToDueDate(e.target.value)}
                         />
                     </div>
-                    <div className="filter-group">
-                     <button className="apply-button-column" onClick={() => loadTasks()}>Apply</button>
+                    <div className="filter-group-buttons">
+                        <div>
+                             <button className="apply-button-column" onClick={() => loadTasks()}>Apply</button>
+                        </div>
+
+                        <div>
+                        <button className="apply-button-column clear-filters-button" onClick={clearFilters}>
+                            Clear Filters
+                        </button>
+                        </div>
+
                     </div>
+
                 </div>
             {/* ---------------Existing Tasks --------------- */}
             {/* ---------- View Tasks ---------- */}

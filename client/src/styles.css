@@ -755,3 +755,15 @@ table td:nth-child(4) {
     90%  { opacity: 1; }
     100% { opacity: 0; transform: translate(-50%, -10px); }
 }
+
+/*Clear filter*/
+.filter-group-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-top: 18px;
+}
+.clear-filters-button {
+    background-color: #999;
+}

@@ -130,8 +130,7 @@ export default function UserActivityPage() {
                         if (startIndex !== 0) {
                             setStartIndex(Math.max(startIndex - limit, 0));
                         }
-                    }}
-                >
+                    }}>
                     ← Previous
                 </span>
 
@@ -141,8 +140,7 @@ export default function UserActivityPage() {
                         if (hasNext) {
                             setStartIndex(startIndex + limit);
                         }
-                    }}
-                  >
+                    }}>
                     Next →
                </span>
             </div>
