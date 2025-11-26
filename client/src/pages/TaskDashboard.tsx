@@ -228,7 +228,7 @@ export default function TaskDashboard() {
         try {
             const due = new Date(task.dueDate);
             const now = new Date();
-            return due < now && task.status !== "DONE";
+            return due < now && task.status !== "COMPLETE";
         } catch {
             return false;
         }
@@ -283,7 +283,7 @@ export default function TaskDashboard() {
                             onChange={(e) => setNewStatus(e.target.value as TaskStatus)}>
                             <option value="PENDING">Pending</option>
                             <option value="IN_PROGRESS">In Progress</option>
-                            <option value="DONE">Done</option>
+                            <option value="COMPLETE">Complete</option>
                         </select>
                     </div>
 
@@ -372,7 +372,7 @@ export default function TaskDashboard() {
                             <option value="">Status (All)</option>
                             <option value="PENDING">Pending</option>
                             <option value="IN_PROGRESS">In Progress</option>
-                            <option value="DONE">Done</option>
+                            <option value="COMPLETE">Complete</option>
                         </select>
                     </div>
                     <div className="filter-group">
@@ -538,7 +538,7 @@ export default function TaskDashboard() {
                                     >
                                         <option value="PENDING">Pending</option>
                                         <option value="IN_PROGRESS">In Progress</option>
-                                        <option value="DONE">Done</option>
+                                        <option value="COMPLETE">Complete</option>
                                     </select>
                                 </div>
                             </div>
