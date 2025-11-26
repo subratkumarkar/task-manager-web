@@ -7,6 +7,7 @@ import { TaskSearchRequest } from "../types/TaskSearchRequest";
 import { Task } from "../types/Task";
 import ShowMoreText from "../components/ShowMoreText";
 import ConfirmDialog from "../components/ConfirmDialog";
+import Toast from "../components/Toast";
 
 
 export default function TaskDashboard() {
@@ -54,6 +55,9 @@ export default function TaskDashboard() {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [editError, setEditError] = useState("");
+    const [toastMsg, setToastMsg] = useState("");
+    const [toastType, setToastType] = useState<"success" | "error">("success");
+
 
     function askDelete(task: Task) {
         setTaskToDelete(task);
@@ -67,10 +71,19 @@ export default function TaskDashboard() {
             await api.delete(`/tasks/${taskToDelete.id}`);
             setConfirmOpen(false);
             setTaskToDelete(null);
+            showToast("Task deleted!", "success");
             loadTasks();
         } catch (err) {
-            console.error("Delete failed", err);
+            showToast(err.response?.data?.error || "Failed to delete task.", "error");
         }
+    }
+
+    function showToast(msg: string, type: "success" | "error" = "success") {
+        setToastMsg(msg);
+        setToastType(type);
+
+        // Auto hide after 3 seconds
+        setTimeout(() => setToastMsg(""), 3000);
     }
 
     async function loadTasks() {
@@ -94,7 +107,7 @@ export default function TaskDashboard() {
             setTasks(res.data.items || []);
             setTotalCount(res.data.totalCount ?? 0);
         } catch (err) {
-            console.error("Error fetching tasks", err);
+            showToast("Failed to load tasks.", "error");
         }
         setLoading(false);
     }
@@ -142,7 +155,7 @@ export default function TaskDashboard() {
                 status: newStatus,
                 dueDate: newDueDate ? newDueDate + ":00" : null,
             });
-
+            showToast("Task created successfully!");
             // reset form
             setNewTitle("");
             setNewDesc("");
@@ -153,7 +166,7 @@ export default function TaskDashboard() {
 
             loadTasks();
         } catch (err) {
-            setCreateError("Failed to create task.");
+            showToast(err.response?.data?.error || "Failed to create task.", "error");
         }
     }
 
@@ -190,16 +203,6 @@ export default function TaskDashboard() {
             return;
         }
 
-        if (editDueDate) {
-            const selected = new Date(editDueDate);
-            const now = new Date();
-            if (selected < now) {
-                setEditError("Due date/time cannot be in the past.");
-                return;
-            }
-        }
-        // -------------------
-
         try {
             await api.put("/tasks", {
                 id: editTask.id,
@@ -209,11 +212,11 @@ export default function TaskDashboard() {
                 status: editStatus,
                 dueDate: editDueDate ? editDueDate + ":00" : null,
             });
-
             closeEditModal();
+            showToast("Task updated!", "success");
             loadTasks();
         } catch (err) {
-            setEditError("Failed to update task.");
+            showToast(err.response?.data?.error || "Failed to update task.", "error");
         }
     }
 
@@ -241,9 +244,9 @@ export default function TaskDashboard() {
 
         return <span className={cls}>{priority}</span>;
     }
-
     return (
         <div className="page-container full-width-page">
+            <Toast message={toastMsg} type={toastType} />
             <h1>Tasks</h1>
 
             {/* --------------- Create Task Card --------------- */}
