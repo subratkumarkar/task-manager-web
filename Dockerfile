@@ -1,10 +1,22 @@
 # ============ BUILDER =============
 FROM node:18-alpine AS builder
-WORKDIR /app
+WORKDIR /app/client
 
-COPY client ./client
-RUN cd client && npm ci
-RUN cd client && npm run build
+# Copy only package.json first
+COPY client/package*.json ./
+
+# Install ALL dependencies (including dev + vitest)
+RUN npm ci
+
+# Copy the rest of the client source
+COPY client ./
+
+#RUN TESTS HERE
+RUN npm test
+
+# Build frontend
+RUN npm run build
+
 
 # ============ SERVER =============
 FROM node:18-alpine
