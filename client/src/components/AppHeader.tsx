@@ -13,7 +13,7 @@ export default function AppHeader() {
     function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("userId");
-        navigate("/login");
+        window.location.href = "/login";
     }
 
     return (

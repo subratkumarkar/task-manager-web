@@ -8,6 +8,7 @@ import { Task } from "../types/Task";
 import ShowMoreText from "../components/ShowMoreText";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Toast from "../components/Toast";
+import { PRIORITY_LABELS, STATUS_LABELS } from "../types/constants";
 
 
 export default function TaskDashboard() {
@@ -124,6 +125,8 @@ export default function TaskDashboard() {
     }
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
         loadTasks();
     }, [startIndex, sortBy, sortDirection, filterReset]);
 
@@ -281,9 +284,9 @@ export default function TaskDashboard() {
                             value={newPriority}
                             onChange={(e) =>
                                 setNewPriority(e.target.value as TaskPriority)}>
-                            <option value="LOW">Low</option>
-                            <option value="MEDIUM">Medium</option>
-                            <option value="HIGH">High</option>
+                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -292,9 +295,9 @@ export default function TaskDashboard() {
                         <select className="create-select"
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value as TaskStatus)}>
-                            <option value="PENDING">Pending</option>
-                            <option value="IN_PROGRESS">In Progress</option>
-                            <option value="COMPLETE">Complete</option>
+                            {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -365,9 +368,9 @@ export default function TaskDashboard() {
                                 )
                             }>
                             <option value="">All</option>
-                            <option value="LOW">Low</option>
-                            <option value="MEDIUM">Medium</option>
-                            <option value="HIGH">High</option>
+                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="filter-group">
@@ -381,9 +384,9 @@ export default function TaskDashboard() {
                                 )
                             }>
                             <option value="">All</option>
-                            <option value="PENDING">Pending</option>
-                            <option value="IN_PROGRESS">In Progress</option>
-                            <option value="COMPLETE">Complete</option>
+                            {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="filter-group">
@@ -433,7 +436,7 @@ export default function TaskDashboard() {
                             { key: "dueDate", label: "Due Date" },
                             { key: "updatedAt", label: "Updated" },
                         ].map((col) => (
-                            <th key={col.key} onClick={() => handleSort(col.key)}>
+                            <th key={col.key} className="sortable-header" onClick={() => handleSort(col.key)}>
                                 {col.label}{" "}
                                 {sortBy === col.key &&
                                     (sortDirection === "ASC" ? "▲" : "▼")}
@@ -452,8 +455,8 @@ export default function TaskDashboard() {
                                 <td>
                                     <ShowMoreText text={task.title} maxChars={40} />
                                 </td>
-                                <td>{renderPriorityTag(task.priority)}</td>
-                                <td>{task.status}</td>
+                                <td>{PRIORITY_LABELS[task.priority] || task.priority}</td>
+                                <td>{STATUS_LABELS[task.status] || task.status}</td>
                                 <td>
                                     <ShowMoreText text={task.description} maxChars={40} />
                                 </td>
@@ -542,9 +545,9 @@ export default function TaskDashboard() {
                                             setEditPriority(e.target.value as TaskPriority)
                                         }
                                     >
-                                        <option value="LOW">Low</option>
-                                        <option value="MEDIUM">Medium</option>
-                                        <option value="HIGH">High</option>
+                                        {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
                                     </select>
                                 </div>
 
@@ -557,9 +560,9 @@ export default function TaskDashboard() {
                                             setEditStatus(e.target.value as TaskStatus)
                                         }
                                     >
-                                        <option value="PENDING">Pending</option>
-                                        <option value="IN_PROGRESS">In Progress</option>
-                                        <option value="COMPLETE">Complete</option>
+                                        {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>

@@ -487,6 +487,18 @@ tr:hover {
     margin-top: 28px;
 }
 
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s ease-in-out;
+}
+
+.sortable-header:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+
 textarea {
     width: 100%;
     padding: 10px;
@@ -762,7 +774,6 @@ table td:nth-child(4) {
     flex-direction: row;
     justify-content: flex-start;
     gap: 12px;
-    margin-top: 18px;
 }
 .clear-filters-button {
     background-color: #999;

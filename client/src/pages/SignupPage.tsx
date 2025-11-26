@@ -30,7 +30,7 @@ export default function SignupPage() {
                 password,
             });
             setSignupSuccess("Account created successfully! Please log in.");
-            setTimeout(() => navigate("/login"), 1200); // small delay so user can see message
+            setTimeout(() => navigate("/login"), 2000); // small delay so user can see message
         } catch (err) {
             const backendMsg = err.response?.data?.error ||  "Signup failed. Please try again.";
             setSignupError(backendMsg);

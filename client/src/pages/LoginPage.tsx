@@ -8,30 +8,33 @@ export default function LoginPage() {
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
-    const [params, setParams] = useSearchParams();
+    const [params] = useSearchParams();
 
-    // Show message only once
+    // Redirect immediately if token already exists
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/tasks", { replace: true });
+        }
+    }, []);
+
+    // Show session expired message
     useEffect(() => {
         const expired = params.get("session");
         if (expired === "expired") {
             setError("Your session has expired. Please log in again.");
-            // Remove the query param so it doesn’t stick forever
-            params.delete("session");
-            setParams(params, { replace: true });
         }
     }, []);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        setError(""); // reset error
+
         try {
             const res = await api.post("/auth/login", { email, password });
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("userId", res.data.userId);
-            params.delete("session");
-            setParams(params, { replace: true });
             navigate("/tasks", { replace: true });
-        } catch {
+        } catch (err) {
             setError("Invalid email or password");
         }
     }
@@ -41,14 +44,17 @@ export default function LoginPage() {
             <div className="auth-card">
                 <h2 className="text-center">Login</h2>
 
+                {error && <p className="error-text">{error}</p>}
+
                 <form onSubmit={handleSubmit}>
                     <label>Email</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    <input type="email" value={email}
+                           onChange={(e) => setEmail(e.target.value)} />
 
                     <label>Password</label>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                    <input type="password" value={password}
+                           onChange={(e) => setPassword(e.target.value)} />
 
-                    {error && <p className="error-text">{error}</p>}
                     <button type="submit" style={{ width: "100%", marginTop: "10px" }}>
                         Login
                     </button>
