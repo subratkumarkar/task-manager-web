@@ -256,7 +256,7 @@ export default function TaskDashboard() {
                     ? "priority-tag priority-medium"
                     : "priority-tag priority-low";
 
-        return <span className={cls}>{priority}</span>;
+        return <span className={cls}>{PRIORITY_LABELS[priority] || priority}</span>;
     }
     return (
         <div className="page-container full-width-page">
@@ -455,7 +455,7 @@ export default function TaskDashboard() {
                                 <td>
                                     <ShowMoreText text={task.title} maxChars={40} />
                                 </td>
-                                <td>{PRIORITY_LABELS[task.priority] || task.priority}</td>
+                                <td>{renderPriorityTag(task.priority)}</td>
                                 <td>{STATUS_LABELS[task.status] || task.status}</td>
                                 <td>
                                     <ShowMoreText text={task.description} maxChars={40} />
